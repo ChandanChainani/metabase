@@ -9,6 +9,7 @@ import type {
   SearchModel,
   SearchResult,
   SearchResultId,
+  SearchRequest,
 } from "metabase-types/api";
 
 import type {
@@ -52,6 +53,7 @@ export interface EntityPickerModalProps<Model extends string, Item> {
   tabs: EntityTab<Model>[];
   options?: Partial<EntityPickerOptions>;
   searchResultFilter?: (results: SearchResult[]) => SearchResult[];
+  searchParams?: Partial<SearchRequest>;
   actionButtons?: JSX.Element[];
   trapFocus?: boolean;
 }
@@ -73,6 +75,7 @@ export function EntityPickerModal<
   actionButtons = [],
   searchResultFilter,
   trapFocus = true,
+  searchParams,
 }: EntityPickerModalProps<Model, Item>) {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchResults, setSearchResults] = useState<SearchResult[] | null>(
@@ -126,6 +129,7 @@ export function EntityPickerModal<
                 searchQuery={searchQuery}
                 setSearchQuery={setSearchQuery}
                 searchFilter={searchResultFilter}
+                searchParams={searchParams}
               />
             )}
           </GrowFlex>
