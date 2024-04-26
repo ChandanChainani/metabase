@@ -118,7 +118,7 @@
 (api/defendpoint GET "/recent_views"
   "Get a list of 5 things the current user has been viewing most recently."
   []
-  (let [views            (recent-views/user-recent-views api/*current-user-id* 10)
+  (let [views            (recent-views/user-recent-views api/*current-user-id* 30)
         model->id->items (models-for-views views)]
     (->> (for [{:keys [model model_id] :as view-log} views
                :let
@@ -132,7 +132,7 @@
                              (= (:visibility_type model-object) :hidden))))]
            (cond-> (assoc view-log :model_object model-object)
              (= (keyword (:type model-object)) :model) (assoc :model "dataset")))
-         (take 5))))
+         (take 30))))
 
 (api/defendpoint GET "/most_recently_viewed_dashboard"
   "Get the most recently viewed dashboard for the current user. Returns a 204 if the user has not viewed any dashboards

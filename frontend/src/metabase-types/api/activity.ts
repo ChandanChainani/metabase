@@ -12,9 +12,11 @@ export type ActivityModel = typeof ACTIVITY_MODELS[number];
 export type ActivityModelId = number;
 
 export interface ActivityModelObject {
+  id: ActivityModelId;
   name: string;
   display_name?: string;
   moderated_status?: string;
+  authority_level?: string;
   collection_id?: CollectionId | null;
   collection_name?: string;
   database_name?: string;
@@ -28,6 +30,10 @@ export interface RecentItem {
   model: ActivityModel;
   model_id: ActivityModelId;
   model_object: ActivityModelObject;
+}
+
+export interface RecentItemsRequest {
+  limit?: number;
 }
 
 export interface PopularItem {
