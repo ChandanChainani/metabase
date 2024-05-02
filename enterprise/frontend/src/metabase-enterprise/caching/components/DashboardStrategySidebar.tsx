@@ -68,6 +68,7 @@ const DashboardStrategySidebar_Base = ({
       <DelayedLoadingAndErrorWrapper loading={loading} error={error}>
         <StrategyForm
           targetId={dashboardId}
+          targetModel="dashboard"
           targetName={dashboard.name}
           setIsDirty={setIsStrategyFormDirty}
           saveStrategy={saveStrategy}

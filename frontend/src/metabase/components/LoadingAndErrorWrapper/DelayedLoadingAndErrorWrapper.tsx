@@ -11,7 +11,7 @@ export type LoadingAndErrorWrapperProps = {
   loading: any;
   noBackground?: boolean;
   noWrapper?: boolean;
-  children: ReactNode;
+  children?: ReactNode;
   style?: object;
   showSpinner?: boolean;
   loadingMessages?: string[];

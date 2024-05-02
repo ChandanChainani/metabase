@@ -162,6 +162,7 @@ const StrategyEditorForDatabases_Base = ({
           {targetId !== null && (
             <StrategyForm
               targetId={targetId}
+              targetModel="database"
               targetName={targetDatabase?.displayName() || t`Untitled database`}
               setIsDirty={setIsStrategyFormDirty}
               saveStrategy={saveStrategy}

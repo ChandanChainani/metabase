@@ -32,6 +32,7 @@ import {
   Tooltip,
 } from "metabase/ui";
 import type {
+  Model,
   ScheduleSettings,
   ScheduleStrategy,
   Strategy,
@@ -40,13 +41,19 @@ import type {
 import { DurationUnit } from "metabase-types/api";
 
 import { useIsFormPending } from "../hooks/useIsFormPending";
-import { rootId, Strategies, strategyValidationSchema } from "../strategies";
+import {
+  getLabelString,
+  rootId,
+  Strategies,
+  strategyValidationSchema,
+} from "../strategies";
 import { cronToScheduleSettings, scheduleSettingsToCron } from "../utils";
 
 import { LoaderInButton } from "./StrategyForm.styled";
 
 export const StrategyForm = ({
   targetId,
+  targetModel,
   targetName,
   setIsDirty,
   saveStrategy,
@@ -56,6 +63,7 @@ export const StrategyForm = ({
   formStyle = {},
 }: {
   targetId: number | null;
+  targetModel: Model;
   targetName: string;
   setIsDirty: (isDirty: boolean) => void;
   saveStrategy: (values: Strategy) => Promise<void>;
@@ -78,6 +86,7 @@ export const StrategyForm = ({
     >
       <StrategyFormBody
         targetId={targetId}
+        targetModel={targetModel}
         targetName={targetName}
         setIsDirty={setIsDirty}
         shouldAllowInvalidation={shouldAllowInvalidation}
@@ -90,6 +99,7 @@ export const StrategyForm = ({
 
 const StrategyFormBody = ({
   targetId,
+  targetModel,
   targetName,
   setIsDirty,
   shouldAllowInvalidation,
@@ -97,6 +107,7 @@ const StrategyFormBody = ({
   formStyle = {},
 }: {
   targetId: number | null;
+  targetModel: Model;
   targetName: string;
   setIsDirty: (isDirty: boolean) => void;
   shouldAllowInvalidation: boolean;
@@ -167,7 +178,7 @@ const StrategyFormBody = ({
             pt={targetId === rootId ? undefined : 0}
             spacing="xl"
           >
-            <StrategySelector targetId={targetId} />
+            <StrategySelector targetId={targetId} model={targetModel} />
             {selectedStrategyType === "ttl" && (
               <>
                 <Field
@@ -336,7 +347,13 @@ const SaveAndDiscardButtons = ({
   );
 };
 
-const StrategySelector = ({ targetId }: { targetId: number | null }) => {
+const StrategySelector = ({
+  targetId,
+  model,
+}: {
+  targetId: number | null;
+  model?: Model;
+}) => {
   const { values } = useFormikContext<Strategy>();
 
   const availableStrategies = useMemo(() => {
@@ -350,21 +367,21 @@ const StrategySelector = ({ targetId }: { targetId: number | null }) => {
           <Text
             lh="1rem"
             color="text-medium"
-          >{t`When should cached query results be invalidated?`}</Text>
+          >{t`When should cached query results expire?`}</Text>
         }
         name="type"
       >
         <Stack mt="md" spacing="md">
           {_.map(availableStrategies, (option, name) => {
-            const optionLabelParts = option.label.split(":");
-            const optionLabelFormatted =
-              optionLabelParts.length === 1 ? (
-                option.label
-              ) : (
-                <>
-                  <strong>{optionLabelParts[0]}</strong>:{optionLabelParts[1]}
-                </>
-              );
+            const optionLabelParts = getLabelString(option.label, model).split(
+              ":",
+            );
+            const optionLabelFormatted = (
+              <>
+                <strong>{optionLabelParts[0]}</strong>
+                {optionLabelParts[1] ? <>: {optionLabelParts[1]}</> : null}
+              </>
+            );
             return (
               <Radio
                 value={name}

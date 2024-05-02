@@ -30,7 +30,7 @@ export const DashboardCacheSection = ({
   const savedStrategy = targetConfig?.strategy;
 
   const shortStrategyLabel =
-    getShortStrategyLabel(savedStrategy) || t`Use default`;
+    getShortStrategyLabel(savedStrategy, "dashboard") || t`Use default`;
 
   return (
     <DelayedLoadingAndErrorWrapper loading={loading} error={error}>
