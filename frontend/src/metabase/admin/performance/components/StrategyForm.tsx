@@ -165,7 +165,9 @@ const StrategyFormBody = ({
           {shouldShowName && (
             <Box lh="1rem" px="lg" py="xs" color="text-medium">
               <Group spacing="sm">
-                <FixedSizeIcon name="database" color="inherit" />
+                {targetModel === "database" && (
+                  <FixedSizeIcon name="database" color="inherit" />
+                )}
                 <Text fw="bold" py="1rem">
                   {targetName}
                 </Text>

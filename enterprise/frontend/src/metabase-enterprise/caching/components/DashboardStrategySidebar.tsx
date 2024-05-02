@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import type { InjectedRouter, Route } from "react-router";
 import { withRouter } from "react-router";
 import _ from "underscore";
@@ -11,7 +11,7 @@ import { DelayedLoadingAndErrorWrapper } from "metabase/components/LoadingAndErr
 import type { DashboardSidebarPageProps } from "metabase/dashboard/components/DashboardInfoSidebar";
 import { color } from "metabase/lib/colors";
 import { Button, Flex, Icon, Title } from "metabase/ui";
-import type { Model } from "metabase-types/api";
+import type { Model, Strategy } from "metabase-types/api";
 
 import { DashboardStrategySidebarBody } from "./DashboardStrategySidebar.styled";
 
@@ -46,6 +46,13 @@ const DashboardStrategySidebar_Base = ({
     setConfigs,
     "dashboard",
   );
+  const saveAndCloseSidebar = useCallback(
+    async (values: Strategy) => {
+      await saveStrategy(values);
+      setPage("default");
+    },
+    [saveStrategy, setPage],
+  );
 
   const { confirmationModal, setIsStrategyFormDirty } = useConfirmIfFormIsDirty(
     router,
@@ -71,7 +78,7 @@ const DashboardStrategySidebar_Base = ({
           targetModel="dashboard"
           targetName={dashboard.name}
           setIsDirty={setIsStrategyFormDirty}
-          saveStrategy={saveStrategy}
+          saveStrategy={saveAndCloseSidebar}
           savedStrategy={savedStrategy}
           shouldAllowInvalidation
           shouldShowName={false}
