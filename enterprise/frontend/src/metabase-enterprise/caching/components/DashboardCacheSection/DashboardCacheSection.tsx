@@ -1,18 +1,53 @@
-import type { Dashboard } from "metabase-types/api";
+import { useMemo } from "react";
+import { t } from "ttag";
+import _ from "underscore";
 
-import CacheSection from "../CacheSection";
+import { useCacheConfigs } from "metabase/admin/performance/hooks/useCacheConfigs";
+import { getShortStrategyLabel } from "metabase/admin/performance/strategies";
+import { DelayedLoadingAndErrorWrapper } from "metabase/components/LoadingAndErrorWrapper/DelayedLoadingAndErrorWrapper";
+import type { DashboardSidebarPageProps } from "metabase/dashboard/components/DashboardInfoSidebar";
+import { Flex } from "metabase/ui";
 
-interface DashboardCacheSectionProps {
-  dashboard: Dashboard;
-  onSave: (cache_ttl: number | null) => Promise<Dashboard>;
-}
+import { CacheSectionRoot } from "../CacheSection/CacheSection.styled";
+import { PolicyToken } from "../StrategyFormLauncher.styled";
+import { getDashboardId } from "../utils";
 
-const DashboardCacheSection = ({
+export const DashboardCacheSection = ({
   dashboard,
-  onSave,
-}: DashboardCacheSectionProps) => {
-  return <CacheSection initialCacheTTL={dashboard.cache_ttl} onSave={onSave} />;
-};
+  setPage,
+}: DashboardSidebarPageProps) => {
+  const dashboardId = getDashboardId(dashboard);
 
-// eslint-disable-next-line import/no-default-export -- deprecated usage
-export default DashboardCacheSection;
+  const { configs, loading, error } = useCacheConfigs({
+    configurableModels: ["dashboard"],
+    id: dashboardId,
+  });
+
+  const targetConfig = useMemo(
+    () => _.findWhere(configs, { model_id: dashboardId }),
+    [configs, dashboardId],
+  );
+  const savedStrategy = targetConfig?.strategy;
+
+  const shortStrategyLabel =
+    getShortStrategyLabel(savedStrategy) || t`Use default`;
+
+  return (
+    <DelayedLoadingAndErrorWrapper loading={loading} error={error}>
+      <CacheSectionRoot>
+        <Flex align="center" justify="space-between">
+          {t`Caching policy`}
+          <PolicyToken
+            onClick={() => setPage("caching")}
+            variant="subtle"
+            radius={0}
+            p={0}
+            style={{ border: "none" }}
+          >
+            {shortStrategyLabel}
+          </PolicyToken>
+        </Flex>
+      </CacheSectionRoot>
+    </DelayedLoadingAndErrorWrapper>
+  );
+};

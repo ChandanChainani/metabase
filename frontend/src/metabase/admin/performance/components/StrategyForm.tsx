@@ -31,7 +31,6 @@ import {
   Title,
   Tooltip,
 } from "metabase/ui";
-import type Database from "metabase-lib/v1/metadata/Database";
 import type {
   ScheduleSettings,
   ScheduleStrategy,
@@ -48,18 +47,22 @@ import { LoaderInButton } from "./StrategyForm.styled";
 
 export const StrategyForm = ({
   targetId,
-  targetDatabase,
+  targetName,
   setIsDirty,
   saveStrategy,
   savedStrategy,
-  shouldAllowInvalidation,
+  shouldAllowInvalidation = false,
+  shouldShowName = true,
+  formStyle = {},
 }: {
   targetId: number | null;
-  targetDatabase: Database | undefined;
+  targetName: string;
   setIsDirty: (isDirty: boolean) => void;
   saveStrategy: (values: Strategy) => Promise<void>;
   savedStrategy?: Strategy;
-  shouldAllowInvalidation: boolean;
+  shouldAllowInvalidation?: boolean;
+  shouldShowName?: boolean;
+  formStyle?: React.CSSProperties;
 }) => {
   const defaultStrategy: Strategy = {
     type: targetId === rootId ? "nocache" : "inherit",
@@ -75,9 +78,11 @@ export const StrategyForm = ({
     >
       <StrategyFormBody
         targetId={targetId}
-        targetDatabase={targetDatabase}
+        targetName={targetName}
         setIsDirty={setIsDirty}
         shouldAllowInvalidation={shouldAllowInvalidation}
+        shouldShowName={shouldShowName}
+        formStyle={formStyle}
       />
     </FormProvider>
   );
@@ -85,14 +90,18 @@ export const StrategyForm = ({
 
 const StrategyFormBody = ({
   targetId,
-  targetDatabase,
+  targetName,
   setIsDirty,
   shouldAllowInvalidation,
+  shouldShowName = true,
+  formStyle = {},
 }: {
   targetId: number | null;
-  targetDatabase: Database | undefined;
+  targetName: string;
   setIsDirty: (isDirty: boolean) => void;
   shouldAllowInvalidation: boolean;
+  shouldShowName?: boolean;
+  formStyle?: React.CSSProperties;
 }) => {
   const { dirty, values, setFieldValue } = useFormikContext<Strategy>();
   const { setStatus } = useFormContext();
@@ -131,22 +140,23 @@ const StrategyFormBody = ({
           display: "flex",
           flexDirection: "column",
           flexGrow: 1,
-          overflow: "auto",
+          ...formStyle,
         }}
       >
         <Box
+          className="strategy-form-box"
           style={{
             borderBottom: `1px solid ${color("border")}`,
             overflow: "auto",
             flexGrow: 1,
           }}
         >
-          {targetDatabase && (
+          {shouldShowName && (
             <Box lh="1rem" px="lg" py="xs" color="text-medium">
               <Group spacing="sm">
                 <FixedSizeIcon name="database" color="inherit" />
                 <Text fw="bold" py="1rem">
-                  {targetDatabase.displayName()}
+                  {targetName}
                 </Text>
               </Group>
             </Box>
@@ -196,18 +206,26 @@ const StrategyFormBody = ({
         <FormButtons
           targetId={targetId}
           shouldAllowInvalidation={shouldAllowInvalidation}
-          targetName={targetDatabase?.displayName()}
+          targetName={targetName}
         />
       </Form>
     </div>
   );
 };
 
-const FormButtonsGroup = ({ children }: { children: ReactNode }) => (
-  <Group p="md" px="lg" spacing="md" bg="white">
-    {children}
-  </Group>
-);
+const FormButtonsGroup = ({ children }: { children: ReactNode }) => {
+  return (
+    <Group
+      p="md"
+      px="lg"
+      spacing="md"
+      bg="white"
+      className="form-buttons-group"
+    >
+      {children}
+    </Group>
+  );
+};
 
 type FormButtonsProps = {
   targetId: number | null;

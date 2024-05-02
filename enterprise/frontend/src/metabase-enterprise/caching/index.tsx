@@ -2,7 +2,8 @@ import { PLUGIN_CACHING, PLUGIN_FORM_WIDGETS } from "metabase/plugins";
 import { hasPremiumFeature } from "metabase-enterprise/settings";
 
 import CacheTTLField from "./components/CacheTTLField";
-import DashboardCacheSection from "./components/DashboardCacheSection";
+import { DashboardCacheSection } from "./components/DashboardCacheSection/DashboardCacheSection";
+import { DashboardStrategySidebar } from "./components/DashboardStrategySidebar";
 import DatabaseCacheTTLField from "./components/DatabaseCacheTTLField";
 import DatabaseCacheTimeField from "./components/DatabaseCacheTimeField";
 import { GranularControlsExplanation } from "./components/GranularControlsExplanation";
@@ -38,4 +39,5 @@ if (hasPremiumFeature("cache_granular_controls")) {
   PLUGIN_CACHING.canOverrideRootStrategy = true;
   PLUGIN_CACHING.GranularControlsExplanation = GranularControlsExplanation;
   PLUGIN_CACHING.InvalidateNowButton = InvalidateNowButton;
+  PLUGIN_CACHING.DashboardStrategySidebar = DashboardStrategySidebar;
 }
