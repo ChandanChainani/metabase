@@ -367,7 +367,7 @@ const StrategySelector = ({
           <Text
             lh="1rem"
             color="text-medium"
-          >{t`When should cached query results expire?`}</Text>
+          >{t`When should cached query results be invalidated?`}</Text>
         }
         name="type"
       >
