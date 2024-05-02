@@ -6,7 +6,6 @@ import { useSearchQuery } from "metabase/api";
 import EmptyState from "metabase/components/EmptyState";
 import { VirtualizedList } from "metabase/components/VirtualizedList";
 import { NoObjectError } from "metabase/components/errors/NoObjectError";
-import { color } from "metabase/lib/colors";
 import { SearchLoadingSpinner } from "metabase/nav/components/search/SearchResults";
 import { Box, Flex, Icon, Stack, Tabs, TextInput } from "metabase/ui";
 import type {
@@ -93,10 +92,10 @@ export const EntityPickerSearchResults = <
   return (
     <Box h="100%">
       {searchResults.length > 0 ? (
-        <Stack h="100%">
+        <Stack h="100%" bg="bg-light">
           <VirtualizedList
             Wrapper={({ children, ...props }) => (
-              <Box p="xl" {...props} bg={color("bg-light")}>
+              <Box p="xl" {...props}>
                 <ChunkyList>{children}</ChunkyList>
               </Box>
             )}

@@ -4,10 +4,10 @@ import EmptyState from "metabase/components/EmptyState";
 import { NoObjectError } from "metabase/components/errors/NoObjectError";
 import { SearchLoadingSpinner } from "metabase/nav/components/search/SearchResults";
 import { Box, Flex, Stack } from "metabase/ui";
+import type { RecentItem } from "metabase-types/api";
 
 import type { TypeWithModel } from "../../types";
-import { ResultItem,ChunkyList } from "../ResultItem";
-import type { RecentItem } from "metabase-types/api";
+import { ResultItem, ChunkyList } from "../ResultItem";
 
 export const RecentsTab = <
   Id,
@@ -24,17 +24,14 @@ export const RecentsTab = <
   selectedItem: Item | null;
   isLoading: boolean;
 }) => {
-
   if (isLoading || !recentItems) {
     return <SearchLoadingSpinner />;
   }
 
-  console.log({ selectedItem })
-
   return (
-    <Stack h="100%">
+    <Stack h="100%" bg="bg-light">
       {recentItems.length > 0 ? (
-        <Box style={{ overflowY: "auto"}} p="lg">
+        <Box style={{ overflowY: "auto" }} p="xl">
           <ChunkyList>
             {recentItems?.map((item, index) => (
               <ResultItem
@@ -47,7 +44,7 @@ export const RecentsTab = <
                     id: item.model_object.collection_id,
                     name: item.model_object.collection_name,
                     authority_level: item.model_object.authority_level,
-                  }
+                  },
                 }}
                 onClick={() => {
                   onItemSelect({
