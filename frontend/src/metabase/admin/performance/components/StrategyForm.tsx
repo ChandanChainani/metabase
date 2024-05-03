@@ -369,7 +369,7 @@ const StrategySelector = ({
           <Text
             lh="1rem"
             color="text-medium"
-          >{t`Select the cache invalidation policy:`}</Text>
+          >{t`Pick the policy for when cached query results should be invalidated:`}</Text>
         }
         name="type"
       >
