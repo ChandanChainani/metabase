@@ -113,7 +113,7 @@ export const Strategies: Record<StrategyType, StrategyData> = {
     validateWith: scheduleStrategyValidationSchema,
   },
   ttl: {
-    label: t`Calculated age: based on how long the query takes to run`,
+    label: t`Calculated age: use a query’s average execution time to determine how long to cache its results`,
     shortLabel: t`Calculated age`,
     validateWith: multiplierStrategyValidationSchema,
   },
