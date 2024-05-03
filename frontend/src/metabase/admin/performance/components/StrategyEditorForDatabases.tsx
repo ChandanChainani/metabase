@@ -4,7 +4,7 @@ import { withRouter } from "react-router";
 import { t } from "ttag";
 import { findWhere } from "underscore";
 
-import { useDatabaseListQuery } from "metabase/common/hooks";
+import { useListDatabasesQuery } from "metabase/api";
 import { DelayedLoadingAndErrorWrapper } from "metabase/components/LoadingAndErrorWrapper/DelayedLoadingAndErrorWrapper";
 import { PLUGIN_CACHING } from "metabase/plugins";
 import { Box, Stack } from "metabase/ui";
@@ -53,8 +53,8 @@ const StrategyEditorForDatabases_Base = ({
     loading: areConfigsLoading,
   } = useCacheConfigs({ configurableModels });
 
-  const databasesResult = useDatabaseListQuery();
-  const databases = databasesResult.data ?? [];
+  const databasesResult = useListDatabasesQuery();
+  const databases = databasesResult.data?.data ?? [];
 
   const shouldShowResetButton =
     rootStrategyOverriddenOnce || rootStrategyRecentlyOverridden;
@@ -88,7 +88,7 @@ const StrategyEditorForDatabases_Base = ({
     if (!canOverrideRootStrategy && targetId === null) {
       setTargetId(rootId);
     }
-  }, [canOverrideRootStrategy, targetId]);
+  }, [targetId]);
 
   const targetDatabase = databases.find(db => db.id === targetId);
 
