@@ -214,7 +214,7 @@ class PublicDashboardInner extends Component<PublicDashboardProps> {
     }
 
     try {
-      if (this.props.dashboard.tabs?.length === 0) {
+      if (this.props.dashboard?.tabs?.length === 0) {
         fetchDashboardCardData({ reload: false, clearCache: true });
       }
     } catch (error) {
@@ -282,6 +282,7 @@ class PublicDashboardInner extends Component<PublicDashboardProps> {
       draftParameterValues,
       isFullscreen,
       isNightMode,
+      setParameterValue,
       setParameterValueToDefault,
       location,
       dashboardId,
