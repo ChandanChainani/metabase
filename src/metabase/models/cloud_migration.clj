@@ -33,7 +33,7 @@
 (defsetting metabase-store-migration-url
   (deferred-tru "Store URL for migrations. Internal test use only.")
   :visibility :internal
-  :default    "https://store-api.metabase.com/api/v2/migration"
+  :default    "https://store-api.staging.metabase.com/api/v2/migration"
   :doc        false
   :export?    false)
 
@@ -52,7 +52,7 @@
   (->> copy/entities (map t2/table-name) (into #{})))
 
 (def ^:private read-only-mode-exceptions
-  (->> #{ ;; Migrations need to update their own state
+  (->> #{;; Migrations need to update their own state
          :model/CloudMigration :model/Setting
          ;; Users need to login, make queries, and we need need to audit them.
          :model/User :model/Session :model/LoginHistory
@@ -81,7 +81,6 @@
       (throw (ex-info (tru "Metabase is in read-only-mode mode!")
                       {:status-code 403}))))
   resolved-query)
-
 
 ;; Helpers
 
@@ -117,8 +116,8 @@
                                    ret)]
     (proxy [InputStream] []
       (read
-       ([]
-        (f (.read input-stream) true))
+        ([]
+         (f (.read input-stream) true))
         ([^bytes b]
          (f (.read input-stream b)))
         ([^bytes b off len]

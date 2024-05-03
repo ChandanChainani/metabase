@@ -6,7 +6,7 @@
   (:require
    [compojure.core :refer [GET POST PUT]]
    [metabase.api.common :as api]
-   [metabase.config :as config]
+  ;;  [metabase.config :as config]
    [metabase.models.cloud-migration :as cloud-migration]
    [toucan2.core :as t2]))
 
@@ -17,7 +17,8 @@
   (if (t2/select-one :model/CloudMigration :state [:not-in cloud-migration/terminal-states])
     {:status 409 :body "There's an ongoing migration already."}
     (try
-      (let [cloud-migration (->> (config/mb-version-info :tag)
+      (let [cloud-migration (->> "v0.49.7"
+                            ;;  (config/mb-version-info :tag)
                                  cloud-migration/get-store-migration
                                  (t2/insert-returning-instance! :model/CloudMigration))]
         (future (cloud-migration/migrate! cloud-migration))
