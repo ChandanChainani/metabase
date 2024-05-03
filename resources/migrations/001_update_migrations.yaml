@@ -6929,6 +6929,72 @@ databaseChangeLog:
             constraintName: fk_dashboard_collection_id
             onDelete: CASCADE
 
+  - changeSet:
+      id: v50.2024-05-03T16:29:53
+      author: johnswanson
+      comment: Create the Trash collection
+      changes:
+        - sql:
+            sql: >-
+              INSERT INTO collection (id, name, slug, entity_id, type) VALUES (13371339, 'Trash', 'trash', '6gXVH1BpoYUX5Npx0fn8z', 'trash');
+              INSERT INTO permissions (object, group_id) SELECT '/collection/13371339/', id FROM permissions_group;
+      rollback:
+        - sql:
+            sql: >-
+              DELETE FROM permissions WHERE object = '/collection/13371339';
+              DELETE FROM collection WHERE id = 13371339 AND name = 'Trash' AND slug = 'trash';
+
+  - changeSet:
+      id: v50.2024-05-03T16:35:24
+      author: johnswanson
+      comment: Move existing archived collections to the Trash
+      changes:
+        - sql:
+            sql: >-
+              UPDATE collection
+              SET trashed_from_location = location, location = '/13371339/'
+              WHERE archived = true AND namespace IS NULL;
+      rollback:
+        - sql:
+            sql: >-
+              UPDATE collection
+              SET trashed_from_location = NULL, location = trashed_from_location
+              WHERE archived = true AND namespace IS NULL;
+
+  - changeSet:
+      id: v50.2024-05-03T16:35:31
+      author: johnswanson
+      comment: Move existing archived dashboards to the Trash
+      changes:
+        - sql:
+            sql: >-
+              UPDATE report_dashboard
+              SET trashed_from_collection_id = collection_id, collection_id = 13371339
+              WHERE archived = true;
+      rollback:
+        - sql:
+            sql: >-
+              UPDATE report_dashboard
+              SET trashed_from_collection_id = NULL, collection_id = trashed_from_collection_id
+              WHERE archived = true;
+
+  - changeSet:
+      id: v50.2024-05-03T16:35:47
+      author: johnswanson
+      comment: Move existing archived cards to the Trash
+      changes:
+        - sql:
+            sql: >-
+              UPDATE report_card
+              SET trashed_from_collection_id = collection_id, collection_id = 13371339
+              WHERE archived = true;
+      rollback:
+        - sql:
+            sql: >-
+              UPDATE report_card
+              SET trashed_from_collection_id = NULL, collection_id = trashed_from_collection_id
+              WHERE archived = true;
+
   # >>>>>>>>>> DO NOT ADD NEW MIGRATIONS BELOW THIS LINE! ADD THEM ABOVE <<<<<<<<<<
 
 ########################################################################################################################
