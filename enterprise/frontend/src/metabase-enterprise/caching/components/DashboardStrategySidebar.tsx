@@ -3,6 +3,9 @@ import type { InjectedRouter, Route } from "react-router";
 import { withRouter } from "react-router";
 import _ from "underscore";
 
+// TODO: Make each sidebar page a route so we can have onBeforeLeave hooks.
+// The alternative is to use the Redux store to track if the form is dirty and show a confirmation modal when navigating away.
+
 import { StrategyForm } from "metabase/admin/performance/components/StrategyForm";
 import { useCacheConfigs } from "metabase/admin/performance/hooks/useCacheConfigs";
 import { useConfirmIfFormIsDirty } from "metabase/admin/performance/hooks/useConfirmIfFormIsDirty";
