@@ -27,7 +27,7 @@ export const useCacheConfigs = ({
     const configs = _.flatten(configsForEachModel);
     const translatedConfigs = configs.map(translateConfigFromAPI);
     return translatedConfigs;
-  }, []);
+  }, [configurableModels, id]);
 
   const configsFromAPI = configsResult.value;
 

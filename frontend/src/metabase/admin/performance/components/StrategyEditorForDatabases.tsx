@@ -21,6 +21,8 @@ import { rootId } from "../strategies";
 import { Panel, TabWrapper } from "./StrategyEditorForDatabases.styled";
 import { StrategyForm } from "./StrategyForm";
 
+const { canOverrideRootStrategy } = PLUGIN_CACHING;
+
 const StrategyEditorForDatabases_Base = ({
   router,
   route,
@@ -34,11 +36,13 @@ const StrategyEditorForDatabases_Base = ({
     setTargetId,
   ] = useState<number | null>(null);
 
-  const { canOverrideRootStrategy } = PLUGIN_CACHING;
-  const configurableModels: Model[] = ["root"];
-  if (canOverrideRootStrategy) {
-    configurableModels.push("database");
-  }
+  const configurableModels: Model[] = useMemo(() => {
+    const ret: Model[] = ["root"];
+    if (canOverrideRootStrategy) {
+      ret.push("database");
+    }
+    return ret;
+  }, []);
 
   const {
     configs,
