@@ -55,22 +55,23 @@ const DashboardStrategySidebar_Base = ({
     [saveStrategy, setPage],
   );
 
-  const { confirmationModal, setIsStrategyFormDirty } = useConfirmIfFormIsDirty(
-    router,
-    route,
-  );
+  const {
+    askBeforeDiscardingChanges,
+    confirmationModal,
+    isStrategyFormDirty,
+    setIsStrategyFormDirty,
+  } = useConfirmIfFormIsDirty(router, route);
+
+  const goBack = () => setPage("default");
 
   return (
     <DashboardStrategySidebarBody align="flex-start" spacing="md">
       <Flex align="center">
-        <Button
-          lh={0}
-          style={{ marginInlineStart: ".5rem" }}
-          variant="subtle"
-          onClick={() => setPage("default")}
-        >
-          <Icon name="chevronleft" color={color("text-dark")} />
-        </Button>
+        <BackButton
+          onClick={() => {
+            isStrategyFormDirty ? askBeforeDiscardingChanges(goBack) : goBack();
+          }}
+        />
         <Title order={2}>Caching settings</Title>
       </Flex>
       <DelayedLoadingAndErrorWrapper loading={loading} error={error}>
@@ -92,4 +93,15 @@ const DashboardStrategySidebar_Base = ({
 
 export const DashboardStrategySidebar = withRouter(
   DashboardStrategySidebar_Base,
+);
+
+const BackButton = ({ onClick }: { onClick: () => void }) => (
+  <Button
+    lh={0}
+    style={{ marginInlineStart: ".5rem" }}
+    variant="subtle"
+    onClick={onClick}
+  >
+    <Icon name="chevronleft" color={color("text-dark")} />
+  </Button>
 );
