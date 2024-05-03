@@ -20,6 +20,8 @@ import { getUser } from "metabase/selectors/user";
 import { Stack, Switch } from "metabase/ui";
 import type { Dashboard } from "metabase-types/api";
 
+import { DashboardCacheSection } from "../DashboardCacheSection/DashboardCacheSection";
+
 import {
   ContentSection,
   DashboardInfoSidebarRoot,
@@ -132,10 +134,7 @@ const DashboardInfoSidebarBody = ({
             onChange={e => handleToggleAutoApplyFilters(e.target.checked)}
           />
           {showCaching && (
-            <PLUGIN_CACHING.DashboardCacheSection
-              dashboard={dashboard}
-              setPage={setPage}
-            />
+            <DashboardCacheSection dashboard={dashboard} setPage={setPage} />
           )}
         </Stack>
       </ContentSection>
