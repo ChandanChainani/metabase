@@ -7,10 +7,13 @@ import { getShortStrategyLabel } from "metabase/admin/performance/strategies";
 import { DelayedLoadingAndErrorWrapper } from "metabase/components/LoadingAndErrorWrapper/DelayedLoadingAndErrorWrapper";
 import type { DashboardSidebarPageProps } from "metabase/dashboard/components/DashboardInfoSidebar";
 import { Flex } from "metabase/ui";
+import type { Model } from "metabase-types/api";
 
 import { CacheSectionRoot } from "../CacheSection/CacheSection.styled";
 import { PolicyToken } from "../StrategyFormLauncher.styled";
 import { getDashboardId } from "../utils";
+
+const configurableModels: Model[] = ["dashboard"];
 
 export const DashboardCacheSection = ({
   dashboard,
@@ -19,7 +22,7 @@ export const DashboardCacheSection = ({
   const dashboardId = getDashboardId(dashboard);
 
   const { configs, loading, error } = useCacheConfigs({
-    configurableModels: ["dashboard"],
+    configurableModels,
     id: dashboardId,
   });
 

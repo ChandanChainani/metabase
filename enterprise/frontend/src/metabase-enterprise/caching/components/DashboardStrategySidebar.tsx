@@ -15,6 +15,8 @@ import type { Model, Strategy } from "metabase-types/api";
 
 import { DashboardStrategySidebarBody } from "./DashboardStrategySidebar.styled";
 
+const configurableModels: Model[] = ["dashboard"];
+
 const DashboardStrategySidebar_Base = ({
   dashboard,
   setPage,
@@ -28,7 +30,6 @@ const DashboardStrategySidebar_Base = ({
     throw new Error("This dashboard has an invalid id");
   }
   const dashboardId: number = dashboard.id;
-  const configurableModels: Model[] = ["dashboard"];
   const { configs, setConfigs, loading, error } = useCacheConfigs({
     configurableModels,
     id: dashboardId,
