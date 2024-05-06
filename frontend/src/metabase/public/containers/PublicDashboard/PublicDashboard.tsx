@@ -19,13 +19,13 @@ import type {
   MarkNewCardSeenAction,
   OnReplaceAllDashCardVisualizationSettingsAction,
   OnUpdateDashCardVisualizationSettingsAction,
-  RemoveCardFromDashboardOpts,
+  RemoveCardFromDashboardAction,
   ReplaceCardOpts,
-  SetDashCardAttributesOpts,
-  SetMultipleDashCardAttributesOpts,
+  SetDashCardAttributesAction,
+  SetMultipleDashCardAttributesAction,
   SetParameterValueAction,
   SetParameterValueToDefaultAction,
-  UndoRemoveCardFromDashboardOpts,
+  UndoRemoveCardFromDashboardAction,
 } from "metabase/dashboard/actions";
 import {
   onReplaceAllDashCardVisualizationSettings,
@@ -62,6 +62,7 @@ import {
   setPublicDashboardEndpoints,
   setEmbedDashboardEndpoints,
 } from "metabase/services";
+import type { Mode } from "metabase/visualizations/click-actions/Mode";
 import { PublicMode } from "metabase/visualizations/click-actions/modes/PublicMode";
 import type Metadata from "metabase-lib/v1/metadata/Metadata";
 import type { UiParameter } from "metabase-lib/v1/parameters/types";
@@ -92,14 +93,14 @@ type DispatchProps = {
   markNewCardSeen: MarkNewCardSeenAction;
   onReplaceAllDashCardVisualizationSettings: OnReplaceAllDashCardVisualizationSettingsAction;
   onUpdateDashCardVisualizationSettings: OnUpdateDashCardVisualizationSettingsAction;
-  removeCardFromDashboard: RemoveCardFromDashboardOpts;
+  removeCardFromDashboard: RemoveCardFromDashboardAction;
   replaceCard: ReplaceCardOpts;
-  setDashCardAttributes: SetDashCardAttributesOpts;
-  setMultipleDashCardAttributes: SetMultipleDashCardAttributesOpts;
+  setDashCardAttributes: SetDashCardAttributesAction;
+  setMultipleDashCardAttributes: SetMultipleDashCardAttributesAction;
   setParameterValue: SetParameterValueAction;
   setParameterValueToDefault: SetParameterValueToDefaultAction;
   showClickBehaviorSidebar: ShowClickBehaviorSidebarAction;
-  undoRemoveCardFromDashboard: UndoRemoveCardFromDashboardOpts;
+  undoRemoveCardFromDashboard: UndoRemoveCardFromDashboardAction;
   setErrorPage: (error: AppErrorDescriptor) => void;
   onChangeLocation: (location: LocationDescriptor) => void;
 };
@@ -263,9 +264,24 @@ class PublicDashboardInner extends Component<PublicDashboardProps> {
       parameters,
       parameterValues,
       draftParameterValues,
-      isFullscreen,
-      isNightMode,
       setParameterValueToDefault,
+      dashcardData,
+      selectedTabId,
+      slowCards,
+      fetchCardData,
+      replaceCard,
+      markNewCardSeen,
+      setDashCardAttributes,
+      setMultipleDashCardAttributes,
+      removeCardFromDashboard,
+      undoRemoveCardFromDashboard,
+      onReplaceAllDashCardVisualizationSettings,
+      onUpdateDashCardVisualizationSettings,
+      onChangeLocation,
+      showClickBehaviorSidebar,
+
+      isNightMode,
+      isFullscreen,
     } = this.props;
 
     const buttons = !isWithinIframe()
@@ -313,13 +329,37 @@ class PublicDashboardInner extends Component<PublicDashboardProps> {
           {() => (
             <DashboardContainer>
               <DashboardGridConnected
-                {...this.props}
                 dashboard={assoc(dashboard, "dashcards", visibleDashcards)}
                 isPublic
                 className={CS.spread}
-                mode={PublicMode}
+                mode={PublicMode as unknown as Mode}
                 metadata={this.props.metadata}
                 navigateToNewCardFromDashboard={() => {}}
+                dashcardData={dashcardData}
+                selectedTabId={selectedTabId}
+                parameterValues={parameterValues}
+                slowCards={slowCards}
+                isEditing={false}
+                isEditingParameter={false}
+                isXray={false}
+                isFullscreen={false}
+                isNightMode={false}
+                clickBehaviorSidebarDashcard={null}
+                fetchCardData={fetchCardData}
+                replaceCard={replaceCard}
+                markNewCardSeen={markNewCardSeen}
+                setDashCardAttributes={setDashCardAttributes}
+                setMultipleDashCardAttributes={setMultipleDashCardAttributes}
+                removeCardFromDashboard={removeCardFromDashboard}
+                undoRemoveCardFromDashboard={undoRemoveCardFromDashboard}
+                onReplaceAllDashCardVisualizationSettings={
+                  onReplaceAllDashCardVisualizationSettings
+                }
+                onUpdateDashCardVisualizationSettings={
+                  onUpdateDashCardVisualizationSettings
+                }
+                onChangeLocation={onChangeLocation}
+                showClickBehaviorSidebar={showClickBehaviorSidebar}
               />
             </DashboardContainer>
           )}

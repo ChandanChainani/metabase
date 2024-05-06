@@ -257,6 +257,12 @@ export type RemoveCardFromDashboardOpts = {
   dashcardId: DashCardId;
   cardId: CardId | null;
 };
+
+export type RemoveCardFromDashboardAction = (
+  props: RemoveCardFromDashboardOpts,
+) => {
+  dashcardId: DashCardId;
+};
 export const removeCardFromDashboard = createThunkAction<
   [RemoveCardFromDashboardOpts]
 >(REMOVE_CARD_FROM_DASH, ({ dashcardId, cardId }) => dispatch => {
@@ -266,6 +272,13 @@ export const removeCardFromDashboard = createThunkAction<
 });
 
 export type UndoRemoveCardFromDashboardOpts = { dashcardId: DashCardId };
+
+export type UndoRemoveCardFromDashboardAction = (
+  props: UndoRemoveCardFromDashboardOpts,
+) => {
+  dashcardId: DashCardId;
+};
+
 export const undoRemoveCardFromDashboard = createThunkAction<
   [UndoRemoveCardFromDashboardOpts]
 >(UNDO_REMOVE_CARD_FROM_DASH, ({ dashcardId }) => (dispatch, getState) => {

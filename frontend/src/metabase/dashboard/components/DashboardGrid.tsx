@@ -12,6 +12,12 @@ import Modal from "metabase/components/Modal";
 import { ContentViewportContext } from "metabase/core/context/ContentViewportContext";
 import ModalS from "metabase/css/components/modal.module.css";
 import DashboardS from "metabase/css/dashboard.module.css";
+import type {
+  RemoveCardFromDashboardAction,
+  SetDashCardAttributesAction,
+  SetMultipleDashCardAttributesAction,
+  UndoRemoveCardFromDashboardAction,
+} from "metabase/dashboard/actions";
 import {
   isQuestionDashCard,
   getVisibleCardIds,
@@ -45,12 +51,12 @@ import type {
   DashCardId,
   Dashboard,
   QuestionDashboardCard,
-  DashboardTabId,
   ParameterId,
   ParameterValueOrArray,
   VisualizationSettings,
   DashboardCard,
 } from "metabase-types/api";
+import type { SelectedTabId } from "metabase-types/store";
 
 import { AddSeriesModal } from "./AddSeriesModal/AddSeriesModal";
 import { DashCard } from "./DashCard/DashCard";
@@ -81,9 +87,10 @@ type DashboardChangeItem = {
 };
 
 interface DashboardGridProps {
+  className?: string;
   dashboard: Dashboard;
   dashcardData: DashCardDataMap;
-  selectedTabId: DashboardTabId;
+  selectedTabId: SelectedTabId;
   parameterValues: Record<ParameterId, ParameterValueOrArray>;
   slowCards: Record<CardId, boolean>;
   isEditing: boolean;
@@ -112,16 +119,11 @@ interface DashboardGridProps {
   }) => void;
   markNewCardSeen: (dashcardId: DashCardId) => void;
 
-  setDashCardAttributes: (options: DashboardChangeItem) => void;
-  setMultipleDashCardAttributes: (changes: {
-    dashcards: Array<DashboardChangeItem>;
-  }) => void;
+  setDashCardAttributes: SetDashCardAttributesAction;
+  setMultipleDashCardAttributes: SetMultipleDashCardAttributesAction;
 
-  removeCardFromDashboard: (options: {
-    dashcardId: DashCardId;
-    cardId: CardId | null;
-  }) => void;
-  undoRemoveCardFromDashboard: (options: { dashcardId: DashCardId }) => void;
+  removeCardFromDashboard: RemoveCardFromDashboardAction;
+  undoRemoveCardFromDashboard: UndoRemoveCardFromDashboardAction;
 
   onReplaceAllDashCardVisualizationSettings: (
     id: DashCardId,
