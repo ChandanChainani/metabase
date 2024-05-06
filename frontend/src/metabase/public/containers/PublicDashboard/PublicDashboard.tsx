@@ -51,6 +51,9 @@ import {
   getParameterValues,
   getDraftParameterValues,
   getSelectedTabId,
+  getClickBehaviorSidebarDashcard,
+  getIsEditing,
+  getIsEditingParameter,
 } from "metabase/dashboard/selectors";
 import { isActionDashCard } from "metabase/dashboard/utils";
 import title from "metabase/hoc/Title";
@@ -77,6 +80,7 @@ import type {
   AppErrorDescriptor,
   SelectedTabId,
   State,
+  StoreDashcard,
 } from "metabase-types/store";
 
 import EmbedFrame from "../../components/EmbedFrame";
@@ -116,6 +120,11 @@ type StateProps = {
   parameterValues: Record<ParameterId, ParameterValueOrArray>;
   draftParameterValues: Record<ParameterId, ParameterValueOrArray | null>;
   selectedTabId: SelectedTabId;
+
+  clickBehaviorSidebarDashcard: StoreDashcard | null;
+
+  isEditing: boolean;
+  isEditingParameter: boolean;
 };
 
 type OwnProps = {
@@ -150,6 +159,9 @@ const mapStateToProps = (state: State, props: PublicDashboardProps) => {
     parameterValues: getParameterValues(state),
     draftParameterValues: getDraftParameterValues(state),
     selectedTabId: getSelectedTabId(state),
+    clickBehaviorSidebarDashcard: getClickBehaviorSidebarDashcard(state),
+    isEditing: getIsEditing(state),
+    isEditingParameter: getIsEditingParameter(state),
   };
 };
 
@@ -268,6 +280,10 @@ class PublicDashboardInner extends Component<PublicDashboardProps> {
       dashcardData,
       selectedTabId,
       slowCards,
+      clickBehaviorSidebarDashcard,
+      isEditing,
+      isEditingParameter,
+
       fetchCardData,
       replaceCard,
       markNewCardSeen,
@@ -356,12 +372,12 @@ class PublicDashboardInner extends Component<PublicDashboardProps> {
                 selectedTabId={selectedTabId}
                 parameterValues={parameterValues}
                 slowCards={slowCards}
-                isEditing={false}
-                isEditingParameter={false}
+                isEditing={isEditing}
+                isEditingParameter={isEditingParameter}
                 isXray={false}
-                isFullscreen={false}
-                isNightMode={false}
-                clickBehaviorSidebarDashcard={null}
+                isFullscreen={isFullscreen}
+                isNightMode={isNightMode}
+                clickBehaviorSidebarDashcard={clickBehaviorSidebarDashcard}
                 fetchCardData={fetchCardData}
                 replaceCard={replaceCard}
                 markNewCardSeen={markNewCardSeen}
