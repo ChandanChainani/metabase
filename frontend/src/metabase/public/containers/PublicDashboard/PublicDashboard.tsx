@@ -82,7 +82,6 @@ import EmbedFrame from "../../components/EmbedFrame";
 
 import { DashboardContainer } from "./PublicDashboard.styled";
 
-
 type DispatchProps = {
   cancelFetchDashboardCardData: () => void;
   fetchCardData: FetchCardDataAction;
@@ -139,7 +138,6 @@ type OwnProps = {
 type PublicDashboardProps = OwnProps & StateProps & DispatchProps;
 
 const mapStateToProps = (state: State, props: PublicDashboardProps) => {
-  console.log(state)
   return {
     metadata: getMetadata(state, props),
     dashboardId:
@@ -261,6 +259,7 @@ class PublicDashboardInner extends Component<PublicDashboardProps> {
   render() {
     const {
       dashboard,
+      dashboardId,
       parameters,
       parameterValues,
       draftParameterValues,
@@ -293,8 +292,12 @@ class PublicDashboardInner extends Component<PublicDashboardProps> {
           buttons.length > 0 && <div className={CS.flex}>{buttons}</div>
         }
         dashboardTabs={
+          dashboard?.tabs &&
           dashboard?.tabs?.length > 1 && (
-            <DashboardTabs location={this.props.location} />
+            <DashboardTabs
+              dashboardId={dashboardId}
+              location={this.props.location}
+            />
           )
         }
       >
@@ -328,6 +331,8 @@ class PublicDashboardInner extends Component<PublicDashboardProps> {
 
 export const PublicDashboard = _.compose(
   connect(mapStateToProps, mapDispatchToProps),
-  title(({ dashboard }) => dashboard && dashboard.name),
+  title(
+    ({ dashboard }: { dashboard: Dashboard }) => dashboard && dashboard.name,
+  ),
   DashboardControls,
 )(PublicDashboardInner);
