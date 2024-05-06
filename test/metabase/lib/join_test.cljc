@@ -1470,3 +1470,18 @@
           (testing "but when editing the first join, Orders.USER_ID is not visible and no condition is suggested"
             (is (=? nil
                     (lib/suggested-join-conditions query -1 (meta/table-metadata :people) 0)))))))))
+
+(deftest ^:parallel joining-metric-should-add-aggregation
+  (let [mp (-> meta/metadata-provider
+               (lib.tu/metadata-provider-with-card-from-query 1 (-> lib.tu/venues-query (lib/aggregate (lib/count))) {:type :metric})
+               (lib.tu/metadata-provider-with-card-from-query 2 (-> lib.tu/venues-query (lib/aggregate (lib/count))) {:type :metric}))
+        query (-> (lib/query mp (meta/table-metadata :checkins))
+                  (lib/join (lib.metadata/card mp 1))
+                  (lib/join (lib.metadata/card mp 2)))
+        join-1 (get-in query [:stages 0 :joins 0 :alias])
+        join-2 (get-in query [:stages 0 :joins 1 :alias])]
+    (is (=? {:stages [{:joins [{:stages [{:source-card 1}]}
+                               {:stages [{:source-card 2}]}]
+                       :aggregation [[:metric {:join-alias join-1} 1]
+                                     [:metric {:join-alias join-2} 2]]}]}
+            query))))
