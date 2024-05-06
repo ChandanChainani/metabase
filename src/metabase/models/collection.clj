@@ -1012,7 +1012,7 @@
   "The value of the `:type` field for the `instance-analytics` Collection created in [[metabase-enterprise.audit-db]]"
   "instance-analytics")
 
-(def ^:private trash-collection-type
+(def trash-collection-type
   "The value of the `:type` field for the Trash collection that holds archived items."
   "trash")
 
