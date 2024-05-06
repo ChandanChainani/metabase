@@ -15,3 +15,4 @@ PopoverDropdown.displayName = MantinePopoverDropdown.displayName;
 Popover.Dropdown = PopoverDropdown;
 
 export { Popover };
+export { DEFAULT_POPOVER_Z_INDEX } from "./Popover.styled";
