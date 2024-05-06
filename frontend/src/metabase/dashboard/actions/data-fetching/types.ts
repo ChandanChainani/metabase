@@ -33,11 +33,11 @@ export type FetchDashboardAction = ({
     preserveParameters?: boolean;
     ignoreCache?: boolean;
   };
-}) => FetchDashboardResult;
+}) => Promise<FetchDashboardResult>;
 
 export type FetchDashboardCardDataAction = (
   args?: FetchDashboardCardDataOptions,
-) => void;
+) => Promise<void>;
 
 export type FetchDashboardCardMetadataAction = () => void;
 

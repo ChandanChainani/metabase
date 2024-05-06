@@ -294,6 +294,7 @@ export const fetchCardData = createThunkAction(
   FETCH_CARD_DATA,
   function (card, dashcard, { reload, clearCache, ignoreCache } = {}) {
     return async function (dispatch, getState) {
+      console.log("entering fetchCardData");
       dispatch({
         type: FETCH_CARD_DATA_PENDING,
         payload: {
@@ -314,9 +315,20 @@ export const fetchCardData = createThunkAction(
 
       const dashboardType = getDashboardType(dashcard.dashboard_id);
 
+      console.log({ dashboardType });
+
       const { dashboardId, dashboards, parameterValues, dashcardData } =
         getState().dashboard;
       const dashboard = dashboards[dashboardId];
+
+      console.log({
+        dashboardId,
+        dashboards,
+        parameterValues,
+        dashcardData,
+        dashboardType,
+        dashboard,
+      });
 
       // if we have a parameter, apply it to the card query before we execute
       const datasetQuery = applyParameters(
@@ -380,6 +392,8 @@ export const fetchCardData = createThunkAction(
       const queryOptions = {
         cancelled: deferred.promise,
       };
+
+      console.log(datasetQuery.type, dashboardType);
 
       // make the actual request
       if (datasetQuery.type === "endpoint") {
@@ -482,6 +496,7 @@ export const fetchCardData = createThunkAction(
 export const fetchDashboardCardData =
   ({ isRefreshing = false, ...options } = {}) =>
   (dispatch, getState) => {
+    console.log("entering fetchDashboardCardData");
     const dashboard = getDashboardComplete(getState());
     const selectedTabId = getSelectedTabId(getState());
 
@@ -490,6 +505,8 @@ export const fetchDashboardCardData =
       dashboard,
       selectedTabId,
     ).filter(({ dashcard }) => !isVirtualDashCard(dashcard));
+
+    console.log({dashboard, selectedTabId, loadingIds, nonVirtualDashcards   })
 
     let nonVirtualDashcardsToFetch = [];
     if (isRefreshing) {
@@ -530,6 +547,7 @@ export const fetchDashboardCardData =
     }
 
     const promises = nonVirtualDashcardsToFetch.map(({ card, dashcard }) => {
+      console.log({card, dashcard, options})
       return dispatch(fetchCardData(card, dashcard, options)).then(() => {
         return dispatch(updateLoadingTitle(nonVirtualDashcardsToFetch.length));
       });
