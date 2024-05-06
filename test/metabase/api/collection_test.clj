@@ -156,7 +156,6 @@
                   (into #{})))))))
 
 (deftest list-collections-archived-test
-  (collection/ensure-trash-collection-created!)
   (testing "GET /api/collection"
     (t2.with-temp/with-temp [Collection _ {:name "Archived Collection"
                                            :location collection/trash-path
@@ -1376,7 +1375,6 @@
                       (api-get-collection-children a)))))))
 
 (deftest effective-ancestors-and-children-archived-test
-  (collection/ensure-trash-collection-created!)
   (testing "Let's make sure the 'archived` option works on Collections, nested or not"
     (with-collection-hierarchy [a b c]
       (mt/user-http-request :crowberto :put 200 (str "collection/" (u/the-id b))
