@@ -1,5 +1,5 @@
 import cx from "classnames";
-import type { LocationDescriptor } from "history";
+import type { Location, LocationDescriptor } from "history";
 import { assoc } from "icepick";
 import { Component } from "react";
 import { connect } from "react-redux";
@@ -139,15 +139,15 @@ type PublicDashboardProps = OwnProps & StateProps & DispatchProps;
 
 const mapStateToProps = (state: State, props: PublicDashboardProps) => {
   return {
-    metadata: getMetadata(state, props),
+    metadata: getMetadata(state),
     dashboardId:
       props.params.dashboardId || props.params.uuid || props.params.token,
-    dashboard: getDashboardComplete(state, props),
-    dashcardData: getCardData(state, props),
-    slowCards: getSlowCards(state, props),
-    parameters: getParameters(state, props),
-    parameterValues: getParameterValues(state, props),
-    draftParameterValues: getDraftParameterValues(state, props),
+    dashboard: getDashboardComplete(state),
+    dashcardData: getCardData(state),
+    slowCards: getSlowCards(state),
+    parameters: getParameters(state),
+    parameterValues: getParameterValues(state),
+    draftParameterValues: getDraftParameterValues(state),
     selectedTabId: getSelectedTabId(state),
   };
 };
@@ -185,11 +185,11 @@ class PublicDashboardInner extends Component<PublicDashboardProps> {
     initialize();
 
     const result = await fetchDashboard({
-      dashId: uuid || token,
+      dashId: String(uuid || token),
       queryParams: location.query,
     });
 
-    if (result.error) {
+    if ("error" in result && result.error) {
       setErrorPage(result.payload);
       return;
     }
@@ -200,7 +200,7 @@ class PublicDashboardInner extends Component<PublicDashboardProps> {
       }
     } catch (error) {
       console.error(error);
-      setErrorPage(error);
+      setErrorPage(error as AppErrorDescriptor);
     }
   };
 
