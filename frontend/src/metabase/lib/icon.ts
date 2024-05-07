@@ -9,7 +9,7 @@ import type {
 
 export type ObjectWithModel = {
   model: SearchModel;
-  authority_level?: string;
+  authority_level?: string | null;
   display?: CardDisplayType;
   type?: Collection["type"];
 };

@@ -1,4 +1,8 @@
-import type { PopularItem, RecentItem } from "metabase-types/api";
+import type {
+  PopularItem,
+  RecentItemsResponse,
+  RecentItem,
+} from "metabase-types/api";
 
 import { Api } from "./api";
 import { provideActivityItemListTags } from "./tags";
@@ -10,7 +14,9 @@ export const activityApi = Api.injectEndpoints({
         method: "GET",
         url: "/api/activity/recent_views",
       }),
-      providesTags: (items = []) => provideActivityItemListTags(items),
+      transformResponse: (response: RecentItemsResponse) =>
+        response?.["recent-views"],
+      providesTags: items => provideActivityItemListTags(items ?? []),
     }),
     listPopularItems: builder.query<PopularItem[], void>({
       query: () => ({

@@ -12,7 +12,7 @@ type DashboardUrlBuilderOpts = {
 };
 
 export function dashboard(
-  dashboard: Dashboard,
+  dashboard: Pick<Dashboard, "name" | "id">,
   { addCardWithId, editMode }: DashboardUrlBuilderOpts = {},
 ) {
   const options = {
