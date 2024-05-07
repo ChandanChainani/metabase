@@ -30,7 +30,11 @@ export function createThunkAction<
 ) => (
   dispatch: ThunkDispatch<any, any, any>,
   getState: GetState,
-) => Promise<{ type: TActionType; payload: AwaitedIfPromise<TResult> }> {
+) => Promise<{
+  type: TActionType;
+  payload: AwaitedIfPromise<TResult>;
+  error: unknown;
+}> {
   // @ts-expect-error - withAction is too hard to type correctly as it can accept both the payload or a thunk creator
   // this function only uses it with a thunk creator
   return withAction(actionType)(thunkCreator);

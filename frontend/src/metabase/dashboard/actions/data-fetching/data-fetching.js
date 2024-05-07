@@ -5,11 +5,7 @@ import { t } from "ttag";
 import { showAutoApplyFiltersToast } from "metabase/dashboard/actions/parameters";
 import { IS_EMBED_PREVIEW } from "metabase/lib/embed";
 import { defer } from "metabase/lib/promise";
-import {
-  createAction,
-  createAsyncThunk,
-  createThunkAction,
-} from "metabase/lib/redux";
+import { createAction, createThunkAction } from "metabase/lib/redux";
 import { equals } from "metabase/lib/utils";
 import { getDashboardUiParameters } from "metabase/parameters/utils/dashboards";
 import { getParameterValuesByIdFromQueryParams } from "metabase/parameters/utils/parameter-values";
@@ -138,7 +134,7 @@ const loadingComplete = createThunkAction(
 
 let fetchDashboardCancellation;
 
-export const fetchDashboard = createAsyncThunk(
+export const fetchDashboard = createThunkAction(
   "metabase/dashboard/FETCH_DASHBOARD",
   async (
     {
@@ -480,8 +476,14 @@ export const fetchCardData = createThunkAction(
 );
 
 export const fetchDashboardCardData =
-  ({ isRefreshing = false, ...options } = {}) =>
-  (dispatch, getState) => {
+  (
+    { isRefreshing = false, ...options } = {
+      isRefreshing: false,
+      reload: true,
+      clearCache: false,
+    },
+  ) =>
+  async (dispatch, getState) => {
     const dashboard = getDashboardComplete(getState());
     const selectedTabId = getSelectedTabId(getState());
 
@@ -502,7 +504,7 @@ export const fetchDashboardCardData =
         return dashcard.id;
       });
 
-      dispatch({
+      await dispatch({
         type: FETCH_DASHBOARD_CARD_DATA,
         payload: {
           currentTime: performance.now(),
@@ -520,7 +522,7 @@ export const fetchDashboardCardData =
         dispatch(cancelFetchCardData(dashcard.card.id, dashcard.id));
       }
 
-      dispatch({
+      await dispatch({
         type: FETCH_DASHBOARD_CARD_DATA,
         payload: {
           currentTime: performance.now(),
@@ -542,7 +544,7 @@ export const fetchDashboardCardData =
 
       // TODO: There is a race condition here, when refreshing a dashboard before
       // the previous API calls finished.
-      Promise.all(promises).then(() => {
+      await Promise.all(promises).then(() => {
         dispatch(loadingComplete());
       });
     }

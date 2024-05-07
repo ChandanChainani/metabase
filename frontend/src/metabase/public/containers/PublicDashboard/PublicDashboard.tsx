@@ -73,7 +73,6 @@ type OwnProps = {
     token?: string;
     dashboardId?: string;
   };
-  queryParams: Record<string, unknown>;
   hasNightModeToggle: boolean;
   isFullscreen: boolean;
   isNightMode: boolean;
@@ -152,7 +151,7 @@ class PublicDashboardInner extends Component<
       fetchDashboard,
       fetchDashboardCardData,
       setErrorPage,
-      queryParams,
+      location,
       params: { uuid, token },
     } = this.props;
     if (uuid) {
@@ -165,7 +164,7 @@ class PublicDashboardInner extends Component<
 
     const result = await fetchDashboard({
       dashId: String(uuid || token),
-      queryParams,
+      queryParams: location.query,
     });
 
     if ("error" in result && result.error) {
@@ -174,7 +173,7 @@ class PublicDashboardInner extends Component<
     }
 
     try {
-      if (this.props.dashboard.tabs?.length === 0) {
+      if (this.props.dashboard?.tabs?.length === 0) {
         await fetchDashboardCardData({ reload: false, clearCache: true });
       }
     } catch (error) {
@@ -219,19 +218,21 @@ class PublicDashboardInner extends Component<
       return [];
     }
     if (!selectedTabId) {
-      return dashboard.dashcards;
+      return dashboard?.dashcards;
     }
-    return dashboard.dashcards.filter(
+    return dashboard?.dashcards.filter(
       dashcard => dashcard.dashboard_tab_id === selectedTabId,
     );
   };
 
   getHiddenParameterSlugs = () => {
     const { parameters } = this.props;
-    const currentTabParameterIds = this.getCurrentTabDashcards().flatMap(
-      dashcard =>
-        dashcard.parameter_mappings?.map(mapping => mapping.parameter_id) ?? [],
-    );
+    const currentTabParameterIds =
+      this.getCurrentTabDashcards()?.flatMap(
+        dashcard =>
+          dashcard.parameter_mappings?.map(mapping => mapping.parameter_id) ??
+          [],
+      ) ?? [];
     const hiddenParameters = parameters.filter(
       parameter => !currentTabParameterIds.includes(parameter.id),
     );
@@ -312,7 +313,7 @@ class PublicDashboardInner extends Component<
           dashboard?.tabs &&
           dashboard?.tabs?.length > 1 && (
             <DashboardTabs
-              dashboardId={this.dashboardId}
+              dashboardId={this.state.dashboardId}
               location={this.props.location}
             />
           )
