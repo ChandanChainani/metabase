@@ -120,6 +120,11 @@ export interface SearchResult<
   can_write: boolean | null;
 }
 
+export enum SortDirection {
+  Asc = "asc",
+  Desc = "desc",
+}
+
 export type SearchRequest = {
   q?: string;
   archived?: boolean;

@@ -1,12 +1,15 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { t } from "ttag";
 
 import NoResults from "assets/img/no_results.svg";
 import { useSearchQuery } from "metabase/api";
+import type { SortingOptions } from "metabase/components/ItemsTable/BaseItemsTable";
 import LoadingAndErrorWrapper from "metabase/components/LoadingAndErrorWrapper";
 import { color } from "metabase/lib/colors";
 import { PLUGIN_CONTENT_VERIFICATION } from "metabase/plugins";
 import { Box, Flex, Group, Icon, Stack, Title } from "metabase/ui";
+import type { SearchRequest } from "metabase-types/api";
+import { SortDirection } from "metabase-types/api";
 
 import { filterModels, type ActualModelFilters } from "../utils";
 
@@ -19,6 +22,7 @@ import {
 } from "./BrowseContainer.styled";
 import { ModelExplanationBanner } from "./ModelExplanationBanner";
 import { ModelsTable } from "./ModelsTable";
+import { sortModels } from "./utils";
 
 const { availableModelFilters, useModelFilterSettings } =
   PLUGIN_CONTENT_VERIFICATION;
@@ -56,13 +60,22 @@ export const BrowseModels = () => {
 export const BrowseModelsBody = ({
   actualModelFilters,
 }: {
+  /** Mapping of filter names to true if the filter is active
+   * or false if it is inactive */
   actualModelFilters: ActualModelFilters;
 }) => {
-  const { data, error, isLoading } = useSearchQuery({
-    models: ["dataset"],
-    filter_items_in_personal_collection: "exclude",
-    model_ancestors: true,
+  const [sortingOptions, setSortingOptions] = useState<SortingOptions>({
+    sort_column: "name",
+    sort_direction: SortDirection.Asc,
   });
+
+  const query: SearchRequest = {
+    models: ["dataset"], // 'model' in the sense of 'type of thing'
+    model_ancestors: true,
+    filter_items_in_personal_collection: "exclude",
+  };
+
+  const { data, error, isLoading } = useSearchQuery(query);
 
   const models = useMemo(() => {
     const unfilteredModels = data?.data ?? [];
@@ -71,8 +84,8 @@ export const BrowseModelsBody = ({
       actualModelFilters,
       availableModelFilters,
     );
-    return filteredModels;
-  }, [data, actualModelFilters]);
+    return sortModels(filteredModels, sortingOptions);
+  }, [data, actualModelFilters, sortingOptions]);
 
   if (error || isLoading) {
     return (
@@ -88,7 +101,11 @@ export const BrowseModelsBody = ({
     return (
       <Stack spacing="md" mb="lg">
         <ModelExplanationBanner />
-        <ModelsTable items={models} />
+        <ModelsTable
+          items={models}
+          sortingOptions={sortingOptions}
+          onSortingOptionsChange={setSortingOptions}
+        />
       </Stack>
     );
   }
