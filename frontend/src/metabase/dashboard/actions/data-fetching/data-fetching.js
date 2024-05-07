@@ -27,7 +27,7 @@ import {
 import { getParameterValuesBySlug } from "metabase-lib/v1/parameters/utils/parameter-values";
 import { applyParameters } from "metabase-lib/v1/queries/utils/card";
 
-import { DASHBOARD_SLOW_TIMEOUT } from "../constants";
+import { DASHBOARD_SLOW_TIMEOUT } from "../../constants";
 import {
   getDashboardComplete,
   getDashCardBeforeEditing,
@@ -38,7 +38,7 @@ import {
   getDashCardById,
   getSelectedTabId,
   getQuestions,
-} from "../selectors";
+} from "../../selectors";
 import {
   expandInlineDashboard,
   isVirtualDashCard,
@@ -46,9 +46,8 @@ import {
   getDashboardType,
   fetchDataOrError,
   getCurrentTabDashboardCards,
-} from "../utils";
-
-import { loadMetadataForDashboard } from "./metadata";
+} from "../../utils";
+import { loadMetadataForDashboard } from "../metadata";
 
 // normalizr schemas
 const dashcard = new schema.Entity("dashcard");
@@ -481,7 +480,7 @@ export const fetchCardData = createThunkAction(
 );
 
 export const fetchDashboardCardData =
-  ({ isRefreshing, ...options } = {}) =>
+  ({ isRefreshing = false, ...options } = {}) =>
   (dispatch, getState) => {
     const dashboard = getDashboardComplete(getState());
     const selectedTabId = getSelectedTabId(getState());

@@ -5,6 +5,7 @@ import type {
   Dashboard,
   DashboardCard,
   DashboardId,
+  BaseDashboardCard,
 } from "metabase-types/api";
 import type { Dispatch } from "metabase-types/store";
 
@@ -38,8 +39,13 @@ export const setDashboardAttributes = createAction<SetDashboardAttributesOpts>(
 
 export type SetDashCardAttributesOpts = {
   id: DashCardId;
-  attributes: Partial<DashboardCard>;
+  attributes: Partial<DashboardCard> | Partial<BaseDashboardCard>;
 };
+
+export type SetDashCardAttributesAction = (
+  props: SetDashCardAttributesOpts,
+) => void;
+
 export const SET_DASHCARD_ATTRIBUTES =
   "metabase/dashboard/SET_DASHCARD_ATTRIBUTES";
 export const setDashCardAttributes = createAction<SetDashCardAttributesOpts>(
@@ -47,6 +53,13 @@ export const setDashCardAttributes = createAction<SetDashCardAttributesOpts>(
 );
 
 export type SetMultipleDashCardAttributesOpts = SetDashCardAttributesOpts[];
+
+export type SetMultipleDashCardAttributesAction = ({
+  dashcards,
+}: {
+  dashcards: SetMultipleDashCardAttributesOpts;
+}) => void;
+
 export const SET_MULTIPLE_DASHCARD_ATTRIBUTES =
   "metabase/dashboard/SET_MULTIPLE_DASHCARD_ATTRIBUTES";
 export const setMultipleDashCardAttributes = createAction(

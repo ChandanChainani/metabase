@@ -46,7 +46,6 @@ import type {
   DashCardId,
   Dashboard,
   QuestionDashboardCard,
-  DashboardTabId,
   ParameterId,
   ParameterValueOrArray,
   VisualizationSettings,
@@ -84,9 +83,10 @@ type DashboardChangeItem = {
 };
 
 type DashboardGridProps = ConnectedProps<typeof connector> & {
+  className?: string;
   dashboard: Dashboard;
   dashcardData: DashCardDataMap;
-  selectedTabId: DashboardTabId;
+  selectedTabId: SelectedTabId;
   parameterValues: Record<ParameterId, ParameterValueOrArray>;
   slowCards: Record<CardId, boolean>;
   isEditing: boolean;
@@ -462,8 +462,8 @@ class DashboardGrid extends Component<DashboardGridProps, DashboardGridState> {
     this.setState({ isDragging: false });
   };
 
-  onDashCardRemove = (dc: DashboardCard) => {
-    this.props.removeCardFromDashboard({
+  onDashCardRemove = async (dc: DashboardCard) => {
+    await this.props.removeCardFromDashboard({
       dashcardId: dc.id,
       cardId: dc.card_id,
     });

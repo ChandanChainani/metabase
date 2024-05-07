@@ -5,13 +5,13 @@ import { t } from "ttag";
 
 import ButtonsS from "metabase/css/components/buttons.module.css";
 import CS from "metabase/css/core/index.css";
+import type { SetDashCardAttributesAction } from "metabase/dashboard/actions";
 import * as MetabaseAnalytics from "metabase/lib/analytics";
 import { color } from "metabase/lib/colors";
 import Visualization from "metabase/visualizations/components/Visualization";
 import type {
   Card,
   DashCardDataMap,
-  DashCardId,
   QuestionDashboardCard,
 } from "metabase-types/api";
 
@@ -36,10 +36,7 @@ export interface Props {
       reload?: boolean;
     },
   ) => Promise<unknown>;
-  setDashCardAttributes: (options: {
-    id: DashCardId;
-    attributes: Partial<QuestionDashboardCard>;
-  }) => void;
+  setDashCardAttributes: SetDashCardAttributesAction;
   onClose: () => void;
 }
 
