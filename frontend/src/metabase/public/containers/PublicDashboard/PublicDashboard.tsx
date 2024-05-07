@@ -1,7 +1,8 @@
 import cx from "classnames";
-import type { Location, LocationDescriptor } from "history";
+import type { Location } from "history";
 import { assoc } from "icepick";
 import { Component } from "react";
+import type { ConnectedProps } from "react-redux";
 import { connect } from "react-redux";
 import { push } from "react-router-redux";
 import _ from "underscore";
@@ -10,25 +11,7 @@ import LoadingAndErrorWrapper from "metabase/components/LoadingAndErrorWrapper";
 import ColorS from "metabase/css/core/colors.module.css";
 import CS from "metabase/css/core/index.css";
 import DashboardS from "metabase/css/dashboard.module.css";
-import type {
-  FetchCardDataAction,
-  FetchDashboardAction,
-  FetchDashboardCardDataAction,
-  FetchDashboardCardMetadataAction,
-  InitializeDashboardAction,
-  MarkNewCardSeenAction,
-  OnReplaceAllDashCardVisualizationSettingsAction,
-  OnUpdateDashCardVisualizationSettingsAction,
-  RemoveCardFromDashboardAction,
-  ReplaceCardOpts,
-  SetDashCardAttributesAction,
-  SetMultipleDashCardAttributesAction,
-  SetParameterValueAction,
-  SetParameterValueToDefaultAction,
-  UndoRemoveCardFromDashboardAction,
-} from "metabase/dashboard/actions";
 import {
-  onReplaceAllDashCardVisualizationSettings,
   initialize,
   fetchDashboard,
   fetchDashboardCardData,
@@ -37,8 +20,16 @@ import {
   setParameterValue,
   setParameterValueToDefault,
   onUpdateDashCardVisualizationSettings,
+  onReplaceAllDashCardVisualizationSettings,
+  fetchCardData,
+  replaceCard,
+  markNewCardSeen,
+  setDashCardAttributes,
+  setMultipleDashCardAttributes,
+  removeCardFromDashboard,
+  undoRemoveCardFromDashboard,
+  showClickBehaviorSidebar,
 } from "metabase/dashboard/actions";
-import type { ShowClickBehaviorSidebarAction } from "metabase/dashboard/actions/ui/types";
 import { getDashboardActions } from "metabase/dashboard/components/DashboardActions";
 import { DashboardGridConnected } from "metabase/dashboard/components/DashboardGrid";
 import { DashboardTabs } from "metabase/dashboard/components/DashboardTabs";
@@ -67,65 +58,12 @@ import {
 } from "metabase/services";
 import type { Mode } from "metabase/visualizations/click-actions/Mode";
 import { PublicMode } from "metabase/visualizations/click-actions/modes/PublicMode";
-import type Metadata from "metabase-lib/v1/metadata/Metadata";
-import type { UiParameter } from "metabase-lib/v1/parameters/types";
-import type {
-  Dashboard,
-  DashCardDataMap,
-  DashCardId,
-  ParameterId,
-  ParameterValueOrArray,
-} from "metabase-types/api";
-import type {
-  AppErrorDescriptor,
-  SelectedTabId,
-  State,
-  StoreDashcard,
-} from "metabase-types/store";
+import type { Dashboard, DashboardId } from "metabase-types/api";
+import type { AppErrorDescriptor, State } from "metabase-types/store";
 
 import EmbedFrame from "../../components/EmbedFrame";
 
 import { DashboardContainer } from "./PublicDashboard.styled";
-
-type DispatchProps = {
-  cancelFetchDashboardCardData: () => void;
-  fetchCardData: FetchCardDataAction;
-  fetchDashboard: FetchDashboardAction;
-  fetchDashboardCardData: FetchDashboardCardDataAction;
-  fetchDashboardCardMetadata: FetchDashboardCardMetadataAction;
-  initialize: InitializeDashboardAction;
-  markNewCardSeen: MarkNewCardSeenAction;
-  onReplaceAllDashCardVisualizationSettings: OnReplaceAllDashCardVisualizationSettingsAction;
-  onUpdateDashCardVisualizationSettings: OnUpdateDashCardVisualizationSettingsAction;
-  removeCardFromDashboard: RemoveCardFromDashboardAction;
-  replaceCard: ReplaceCardOpts;
-  setDashCardAttributes: SetDashCardAttributesAction;
-  setMultipleDashCardAttributes: SetMultipleDashCardAttributesAction;
-  setParameterValue: SetParameterValueAction;
-  setParameterValueToDefault: SetParameterValueToDefaultAction;
-  showClickBehaviorSidebar: ShowClickBehaviorSidebarAction;
-  undoRemoveCardFromDashboard: UndoRemoveCardFromDashboardAction;
-  setErrorPage: (error: AppErrorDescriptor) => void;
-  onChangeLocation: (location: LocationDescriptor) => void;
-};
-
-type StateProps = {
-  metadata: Metadata;
-  dashboardId: string;
-  dashboard: Dashboard;
-  dashcardData: DashCardDataMap;
-  slowCards: Record<DashCardId, boolean>;
-  parameters: UiParameter[];
-
-  parameterValues: Record<ParameterId, ParameterValueOrArray>;
-  draftParameterValues: Record<ParameterId, ParameterValueOrArray | null>;
-  selectedTabId: SelectedTabId;
-
-  clickBehaviorSidebarDashcard: StoreDashcard | null;
-
-  isEditing: boolean;
-  isEditingParameter: boolean;
-};
 
 type OwnProps = {
   location: Location;
@@ -135,6 +73,7 @@ type OwnProps = {
     token?: string;
     dashboardId?: string;
   };
+  queryParams: Record<string, unknown>;
   hasNightModeToggle: boolean;
   isFullscreen: boolean;
   isNightMode: boolean;
@@ -145,13 +84,9 @@ type OwnProps = {
   setRefreshElapsedHook?: (hook: () => void) => void;
 };
 
-type PublicDashboardProps = OwnProps & StateProps & DispatchProps;
-
-const mapStateToProps = (state: State, props: PublicDashboardProps) => {
+const mapStateToProps = (state: State) => {
   return {
     metadata: getMetadata(state),
-    dashboardId:
-      props.params.dashboardId || props.params.uuid || props.params.token,
     dashboard: getDashboardComplete(state),
     dashcardData: getCardData(state),
     slowCards: getSlowCards(state),
@@ -170,23 +105,54 @@ const mapDispatchToProps = {
   fetchDashboard,
   fetchDashboardCardData,
   fetchDashboardCardMetadata,
-  setErrorPage,
-  onChangeLocation: push,
   cancelFetchDashboardCardData,
   setParameterValue,
   setParameterValueToDefault,
   onUpdateDashCardVisualizationSettings,
   onReplaceAllDashCardVisualizationSettings,
+  fetchCardData,
+  replaceCard,
+  markNewCardSeen,
+  setDashCardAttributes,
+  setMultipleDashCardAttributes,
+  removeCardFromDashboard,
+  undoRemoveCardFromDashboard,
+  showClickBehaviorSidebar,
+  setErrorPage,
+  onChangeLocation: push,
 };
 
-class PublicDashboardInner extends Component<PublicDashboardProps> {
+const connector = connect(mapStateToProps, mapDispatchToProps);
+
+type PublicDashboardProps = OwnProps & ConnectedProps<typeof connector>;
+type PublicDashboardState = {
+  dashboardId: DashboardId;
+};
+
+class PublicDashboardInner extends Component<
+  PublicDashboardProps,
+  PublicDashboardState
+> {
+  constructor(props: PublicDashboardProps) {
+    super(props);
+    this.state = {
+      dashboardId:
+        // https://legacy.reactjs.org/docs/react-component.html#constructor
+        String(
+          this.props.params.dashboardId ||
+            this.props.params.uuid ||
+            this.props.params.token,
+        ),
+    };
+  }
+
   _initialize = async () => {
     const {
       initialize,
       fetchDashboard,
       fetchDashboardCardData,
       setErrorPage,
-      location,
+      queryParams,
       params: { uuid, token },
     } = this.props;
     if (uuid) {
@@ -199,7 +165,7 @@ class PublicDashboardInner extends Component<PublicDashboardProps> {
 
     const result = await fetchDashboard({
       dashId: String(uuid || token),
-      queryParams: location.query,
+      queryParams,
     });
 
     if ("error" in result && result.error) {
@@ -225,8 +191,11 @@ class PublicDashboardInner extends Component<PublicDashboardProps> {
     this.props.cancelFetchDashboardCardData();
   }
 
-  async componentDidUpdate(prevProps: PublicDashboardProps) {
-    if (this.props.dashboardId !== prevProps.dashboardId) {
+  async componentDidUpdate(
+    prevProps: PublicDashboardProps,
+    prevState: PublicDashboardState,
+  ) {
+    if (this.state.dashboardId !== prevState.dashboardId) {
       return this._initialize();
     }
 
@@ -272,7 +241,6 @@ class PublicDashboardInner extends Component<PublicDashboardProps> {
   render() {
     const {
       dashboard,
-      dashboardId,
       parameters,
       parameterValues,
       draftParameterValues,
@@ -291,10 +259,10 @@ class PublicDashboardInner extends Component<PublicDashboardProps> {
       setMultipleDashCardAttributes,
       removeCardFromDashboard,
       undoRemoveCardFromDashboard,
+      showClickBehaviorSidebar,
       onReplaceAllDashCardVisualizationSettings,
       onUpdateDashCardVisualizationSettings,
       onChangeLocation,
-      showClickBehaviorSidebar,
 
       isNightMode,
       isFullscreen,
@@ -344,7 +312,7 @@ class PublicDashboardInner extends Component<PublicDashboardProps> {
           dashboard?.tabs &&
           dashboard?.tabs?.length > 1 && (
             <DashboardTabs
-              dashboardId={dashboardId}
+              dashboardId={this.dashboardId}
               location={this.props.location}
             />
           )
@@ -403,7 +371,7 @@ class PublicDashboardInner extends Component<PublicDashboardProps> {
 }
 
 export const PublicDashboard = _.compose(
-  connect(mapStateToProps, mapDispatchToProps),
+  connector,
   title(
     ({ dashboard }: { dashboard: Dashboard }) => dashboard && dashboard.name,
   ),
