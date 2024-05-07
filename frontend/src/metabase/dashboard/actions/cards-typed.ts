@@ -15,7 +15,7 @@ import type {
   DashboardTabId,
   VirtualCard,
 } from "metabase-types/api";
-import type { Dispatch, GetState } from "metabase-types/store";
+import type { Dispatch, GetState, ReduxAction } from "metabase-types/store";
 
 import {
   trackCardCreated,
@@ -260,9 +260,14 @@ export type RemoveCardFromDashboardOpts = {
 
 export type RemoveCardFromDashboardAction = (
   props: RemoveCardFromDashboardOpts,
-) => {
-  dashcardId: DashCardId;
-};
+) => Promise<
+  ReduxAction<
+    typeof REMOVE_CARD_FROM_DASH,
+    {
+      dashcardId: DashCardId;
+    }
+  >
+>;
 export const removeCardFromDashboard = createThunkAction<
   [RemoveCardFromDashboardOpts]
 >(REMOVE_CARD_FROM_DASH, ({ dashcardId, cardId }) => dispatch => {

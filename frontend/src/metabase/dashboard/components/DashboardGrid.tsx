@@ -465,8 +465,8 @@ class DashboardGrid extends Component<DashboardGridProps, DashboardGridState> {
     this.setState({ isDragging: false });
   };
 
-  onDashCardRemove = (dc: DashboardCard) => {
-    this.props.removeCardFromDashboard({
+  onDashCardRemove = async (dc: DashboardCard) => {
+    await this.props.removeCardFromDashboard({
       dashcardId: dc.id,
       cardId: dc.card_id,
     });
