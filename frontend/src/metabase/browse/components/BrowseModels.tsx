@@ -11,7 +11,8 @@ import { Box, Flex, Group, Icon, Stack, Title } from "metabase/ui";
 import type { SearchRequest } from "metabase-types/api";
 import { SortDirection } from "metabase-types/api";
 
-import { filterModels, type ActualModelFilters } from "../utils";
+import type { ActualModelFilters } from "../utils";
+import { filterModels } from "../utils";
 
 import {
   BrowseContainer,
@@ -74,7 +75,6 @@ export const BrowseModelsBody = ({
     model_ancestors: true,
     filter_items_in_personal_collection: "exclude",
   };
-
   const { data, error, isLoading } = useSearchQuery(query);
 
   const models = useMemo(() => {

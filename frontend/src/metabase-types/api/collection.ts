@@ -114,6 +114,7 @@ export interface CollectionItem {
   setPinned?: (isPinned: boolean) => void;
   setCollection?: (collection: Pick<Collection, "id">) => void;
   setCollectionPreview?: (isEnabled: boolean) => void;
+  collection_ancestors?: Pick<Collection, "id" | "name">[];
 }
 
 export interface CollectionListQuery {

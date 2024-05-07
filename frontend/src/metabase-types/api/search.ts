@@ -139,6 +139,11 @@ export type SearchRequest = {
   search_native_query?: boolean | null;
   verified?: boolean | null;
   model_ancestors?: boolean | null;
+  // TODO: Support these in the BE. Note that sorting on collection_path is tricky because this string is assembled in the FE
+  // Is it reaaaaally necessary to do this via the BE or can we just sort in the FE? Will there be a real performance hit? =
+  // And are we supporting pagination?
+  sort_column?: string;
+  sort_direction?: SortDirection;
 
   // this should be in ListCollectionItemsRequest but legacy code expects them here
   collection?: CollectionId;

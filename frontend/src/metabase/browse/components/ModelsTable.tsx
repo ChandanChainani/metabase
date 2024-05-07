@@ -1,3 +1,4 @@
+import { push } from "react-router-redux";
 import { t } from "ttag";
 
 import EntityItem from "metabase/components/EntityItem";
@@ -6,7 +7,6 @@ import {
   type SortingOptions,
 } from "metabase/components/ItemsTable/BaseItemsTable";
 import {
-  ColumnHeader,
   ItemCell,
   ItemLink,
   ItemNameCell,
@@ -17,6 +17,7 @@ import {
 import { Columns } from "metabase/components/ItemsTable/Columns";
 import type { ResponsiveProps } from "metabase/components/ItemsTable/utils";
 import { color } from "metabase/lib/colors";
+import { useDispatch } from "metabase/lib/redux";
 import * as Urls from "metabase/lib/urls";
 import { PLUGIN_MODERATION } from "metabase/plugins";
 import type { Card, SearchResult } from "metabase-types/api";
@@ -26,6 +27,7 @@ import { getCollectionName, getIcon } from "../utils";
 
 import { CollectionBreadcrumbsWithTooltip } from "./CollectionBreadcrumbsWithTooltip";
 import { EllipsifiedWithMarkdown } from "./EllipsifiedWithMarkdown";
+import { ModelTableRow } from "./ModelsTable.styled";
 import { getModelDescription } from "./utils";
 
 export interface ModelsTableProps {
@@ -72,7 +74,9 @@ export const ModelsTable = ({
             sortingOptions={sortingOptions}
             onSortingOptionsChange={onSortingOptionsChange}
           />
-          <ColumnHeader {...descriptionProps}>{t`Description`}</ColumnHeader>
+          <SortableColumnHeader name="description" {...descriptionProps}>
+            {t`Description`}
+          </SortableColumnHeader>
           <SortableColumnHeader
             name="collection"
             sortingOptions={sortingOptions}
@@ -100,9 +104,24 @@ const TBodyRow = ({ item }: { item: SearchResult }) => {
   }
 
   const containerName = `collections-path-for-${item.id}`;
+  const dispatch = useDispatch();
+  const stopClickPropagation = {
+    onClick: (e: React.MouseEvent) => e.stopPropagation(),
+  };
 
   return (
-    <tr>
+    <ModelTableRow
+      onClick={(e: React.MouseEvent) => {
+        const url = Urls.model(item as unknown as Partial<Card>);
+        if ((e.ctrlKey || e.metaKey) && e.button === 0) {
+          window.open(url, "_blank");
+        } else {
+          dispatch(push(url));
+        }
+      }}
+      tabIndex={0}
+      key={item.id}
+    >
       {/* Type */}
       <Columns.Type.Cell icon={icon} />
 
@@ -134,13 +153,16 @@ const TBodyRow = ({ item }: { item: SearchResult }) => {
           <CollectionBreadcrumbsWithTooltip
             containerName={containerName}
             collection={item.collection}
+            // To avoid propagating the click event to the ModelTableRow
+            breadcrumbGroupProps={stopClickPropagation}
+            collectionsIconProps={stopClickPropagation}
           />
         )}
       </ItemCell>
 
       {/* Adds a border-radius to the table */}
       <Columns.RightEdge.Cell />
-    </tr>
+    </ModelTableRow>
   );
 };
 

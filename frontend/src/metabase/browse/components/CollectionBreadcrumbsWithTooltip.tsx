@@ -6,15 +6,17 @@ import { ResponsiveContainer } from "metabase/components/ResponsiveContainer/Res
 import { useAreAnyTruncated } from "metabase/hooks/use-is-truncated";
 import resizeObserver from "metabase/lib/resize-observer";
 import * as Urls from "metabase/lib/urls";
-import type { FlexProps } from "metabase/ui";
-import { FixedSizeIcon, Flex, Group, Text, Tooltip } from "metabase/ui";
+import type { FlexProps, GroupProps, IconProps } from "metabase/ui";
+import { Flex, Text, Tooltip } from "metabase/ui";
 import type { CollectionEssentials } from "metabase-types/api";
 
 import { getCollectionName } from "../utils";
 
 import {
   Breadcrumb,
+  BreadcrumbGroup,
   CollectionBreadcrumbsWrapper,
+  CollectionsIcon,
 } from "./CollectionBreadcrumbsWithTooltip.styled";
 import { pathSeparatorChar } from "./constants";
 import type { RefProp } from "./types";
@@ -23,9 +25,13 @@ import { getBreadcrumbMaxWidths, getCollectionPathString } from "./utils";
 export const CollectionBreadcrumbsWithTooltip = ({
   collection,
   containerName,
+  collectionsIconProps,
+  breadcrumbGroupProps,
 }: {
   collection: CollectionEssentials;
   containerName: string;
+  collectionsIconProps?: Partial<IconProps>;
+  breadcrumbGroupProps?: Partial<GroupProps>;
 }) => {
   const collections = (
     (collection.effective_ancestors as CollectionEssentials[]) || []
@@ -82,11 +88,11 @@ export const CollectionBreadcrumbsWithTooltip = ({
         w="auto"
       >
         <Flex align="center" w="100%" lh="1" style={{ flexFlow: "row nowrap" }}>
-          <FixedSizeIcon name="folder" style={{ marginInlineEnd: ".5rem" }} />
+          <CollectionsIcon name="folder" {...collectionsIconProps} />
           {shownCollections.map((collection, index) => {
             const key = `collection${collection.id}`;
             return (
-              <Group spacing={0} style={{ flexFlow: "row nowrap" }} key={key}>
+              <BreadcrumbGroup spacing={0} key={key} {...breadcrumbGroupProps}>
                 {index > 0 && <PathSeparator />}
                 <CollectionBreadcrumbsWrapper
                   containerName={containerName}
@@ -114,7 +120,7 @@ export const CollectionBreadcrumbsWithTooltip = ({
                     {getCollectionName(collection)}
                   </Breadcrumb>
                 </CollectionBreadcrumbsWrapper>
-              </Group>
+              </BreadcrumbGroup>
             );
           })}
         </Flex>
