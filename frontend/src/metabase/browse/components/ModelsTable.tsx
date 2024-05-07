@@ -1,6 +1,7 @@
 import { push } from "react-router-redux";
 import { t } from "ttag";
 
+import NoResults from "assets/img/no_results.svg";
 import EntityItem from "metabase/components/EntityItem";
 import {
   SortableColumnHeader,
@@ -16,24 +17,32 @@ import {
 } from "metabase/components/ItemsTable/BaseItemsTable.styled";
 import { Columns } from "metabase/components/ItemsTable/Columns";
 import type { ResponsiveProps } from "metabase/components/ItemsTable/utils";
+import { DelayedLoadingAndErrorWrapper } from "metabase/components/LoadingAndErrorWrapper/DelayedLoadingAndErrorWrapper";
 import { color } from "metabase/lib/colors";
 import { useDispatch } from "metabase/lib/redux";
 import * as Urls from "metabase/lib/urls";
 import { PLUGIN_MODERATION } from "metabase/plugins";
+import { Box } from "metabase/ui";
 import type { Card, SearchResult } from "metabase-types/api";
 
 import { trackModelClick } from "../analytics";
 import { getCollectionName, getIcon } from "../utils";
 
+import { CenteredEmptyState } from "./BrowseContainer.styled";
 import { CollectionBreadcrumbsWithTooltip } from "./CollectionBreadcrumbsWithTooltip";
 import { EllipsifiedWithMarkdown } from "./EllipsifiedWithMarkdown";
-import { ModelTableRow } from "./ModelsTable.styled";
+import {
+  LoadingAndErrorWrapperTableRow,
+  ModelTableRow,
+} from "./ModelsTable.styled";
 import { getModelDescription } from "./utils";
 
 export interface ModelsTableProps {
-  items: SearchResult[];
+  items?: SearchResult[];
   sortingOptions?: SortingOptions;
   onSortingOptionsChange?: (newSortingOptions: SortingOptions) => void;
+  error?: any;
+  isLoading?: boolean;
 }
 
 const descriptionProps: ResponsiveProps = {
@@ -50,7 +59,25 @@ export const ModelsTable = ({
   items,
   sortingOptions,
   onSortingOptionsChange,
+  error,
+  isLoading,
 }: ModelsTableProps) => {
+  if (items?.length === 0) {
+    return (
+      <CenteredEmptyState
+        title={<Box mb=".5rem">{t`No models here yet`}</Box>}
+        message={
+          <Box maw="24rem">{t`Models help curate data to make it easier to find answers to questions all in one place.`}</Box>
+        }
+        illustrationElement={
+          <Box mb=".5rem">
+            <img src={NoResults} />
+          </Box>
+        }
+      />
+    );
+  }
+
   return (
     <Table>
       <colgroup>
@@ -89,9 +116,20 @@ export const ModelsTable = ({
         </tr>
       </thead>
       <TBody>
-        {items.map((item: SearchResult) => (
-          <TBodyRow item={item} key={`${item.model}-${item.id}`} />
-        ))}
+        {error || isLoading ? (
+          <LoadingAndErrorWrapperTableRow>
+            <td colSpan={5}>
+              <DelayedLoadingAndErrorWrapper
+                error={error}
+                loading={!!isLoading}
+              />
+            </td>
+          </LoadingAndErrorWrapperTableRow>
+        ) : (
+          items?.map((item: SearchResult) => (
+            <TBodyRow item={item} key={`${item.model}-${item.id}`} />
+          ))
+        )}
       </TBody>
     </Table>
   );
