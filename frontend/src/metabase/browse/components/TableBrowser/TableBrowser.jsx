@@ -15,6 +15,12 @@ import {
 } from "metabase-lib/v1/metadata/utils/saved-questions";
 
 import { trackTableClick } from "../../analytics";
+import {
+  BrowseContainer,
+  BrowseHeader,
+  BrowseMain,
+  BrowseSection,
+} from "../BrowseContainer.styled";
 import { BrowseHeaderContent } from "../BrowseHeader.styled";
 
 import {
@@ -36,7 +42,7 @@ const propTypes = {
   showSchemaInHeader: PropTypes.bool,
 };
 
-const TableBrowser = ({
+export const TableBrowser = ({
   database,
   tables,
   getTableUrl,
@@ -47,38 +53,48 @@ const TableBrowser = ({
   showSchemaInHeader = true,
 }) => {
   return (
-    <>
-      <BrowseHeaderContent>
-        <BrowserCrumbs
-          crumbs={[
-            { title: t`Databases`, to: "/browse/databases" },
-            getDatabaseCrumbs(dbId),
-            showSchemaInHeader && { title: schemaName },
-          ]}
-        />
-      </BrowseHeaderContent>
-      <TableGrid>
-        {tables.map(table => (
-          <TableGridItem key={table.id}>
-            <TableCard hoverable={!isSyncInProgress(table)}>
-              <TableLink
-                to={
-                  !isSyncInProgress(table) ? getTableUrl(table, metadata) : ""
-                }
-                onClick={() => trackTableClick(table.id)}
-              >
-                <TableBrowserItem
-                  database={database}
-                  table={table}
-                  dbId={dbId}
-                  xraysEnabled={xraysEnabled}
-                />
-              </TableLink>
-            </TableCard>
-          </TableGridItem>
-        ))}
-      </TableGrid>
-    </>
+    <BrowseContainer>
+      <BrowseHeader>
+        <BrowseSection>
+          <BrowseHeaderContent>
+            <BrowserCrumbs
+              crumbs={[
+                { title: t`Databases`, to: "/browse/databases" },
+                getDatabaseCrumbs(dbId),
+                showSchemaInHeader && { title: schemaName },
+              ]}
+            />
+          </BrowseHeaderContent>
+        </BrowseSection>
+      </BrowseHeader>
+      <BrowseMain>
+        <BrowseSection>
+          <TableGrid>
+            {tables.map(table => (
+              <TableGridItem key={table.id}>
+                <TableCard hoverable={!isSyncInProgress(table)}>
+                  <TableLink
+                    to={
+                      !isSyncInProgress(table)
+                        ? getTableUrl(table, metadata)
+                        : ""
+                    }
+                    onClick={() => trackTableClick(table.id)}
+                  >
+                    <TableBrowserItem
+                      database={database}
+                      table={table}
+                      dbId={dbId}
+                      xraysEnabled={xraysEnabled}
+                    />
+                  </TableLink>
+                </TableCard>
+              </TableGridItem>
+            ))}
+          </TableGrid>
+        </BrowseSection>
+      </BrowseMain>
+    </BrowseContainer>
   );
 };
 
